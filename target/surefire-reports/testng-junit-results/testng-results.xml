@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testng-results skipped="0" failed="0" total="2" passed="2">
+  <reporter-output>
+  </reporter-output>
+  <suite name="Command line suite" duration-ms="64" started-at="2014-03-28T16:34:29Z" finished-at="2014-03-28T16:34:29Z">
+    <groups>
+    </groups>
+    <test name="Command line test" duration-ms="64" started-at="2014-03-28T16:34:29Z" finished-at="2014-03-28T16:34:29Z">
+      <class name="uk.pcn.invoice.util.FileUtilTest">
+        <test-method status="PASS" signature="testgetClassPath()" name="testgetClassPath" duration-ms="25" started-at="2014-03-28T16:34:29Z" finished-at="2014-03-28T16:34:29Z">
+        </test-method> <!-- testgetClassPath -->
+      </class> <!-- uk.pcn.invoice.util.FileUtilTest -->
+      <class name="uk.pcn.invoice.util.PCNUtilTest">
+        <test-method status="PASS" signature="testLodonPostCodeCheck()" name="testLodonPostCodeCheck" duration-ms="3" started-at="2014-03-28T16:34:29Z" finished-at="2014-03-28T16:34:29Z">
+        </test-method> <!-- testLodonPostCodeCheck -->
+      </class> <!-- uk.pcn.invoice.util.PCNUtilTest -->
+    </test> <!-- Command line test -->
+  </suite> <!-- Command line suite -->
+</testng-results>

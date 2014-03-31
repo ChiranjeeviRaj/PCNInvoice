@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ukPaletsPrices>
+    <zones>
+    <zone name="LOCAL ZONE">
+        <postCodes>B, CV, WS</postCodes>
+        <nextDay>
+            <plts min="1" max="3">
+                <kgs min="1" max="250">16.50</kgs>
+                <kgs min="251" max="500">18.25 </kgs>
+                <kgs min="501" max="1250">21.50</kgs>
+            </plts>
+            <plts min="4" max="6">
+                <kgs min="1" max="250">15.50</kgs>
+                <kgs min="251" max="500">17.25 </kgs>
+                <kgs min="501" max="1250">20.50</kgs>
+            </plts>
+            <plts min="7" max="10">
+                <kgs min="1" max="250">14.75</kgs>
+                <kgs min="251" max="500">16.50 </kgs>
+                <kgs min="501" max="1250">19.25</kgs>
+            </plts>
+        </nextDay>
+        <economy>
+            <plts min="1" max="3">
+                <kgs min="1" max="250">13.75</kgs>
+                <kgs min="251" max="500">15.25 </kgs>
+                <kgs min="501" max="1250">18.25</kgs>
+            </plts>
+            <plts min="4" max="6">
+                <kgs min="1" max="250">13.00</kgs>
+                <kgs min="251" max="500">14.50 </kgs>
+                <kgs min="501" max="1250">17.25</kgs>
+            </plts>
+            <plts min="7" max="10">
+                <kgs min="1" max="250">12.50</kgs>
+                <kgs min="251" max="500">13.75 </kgs>
+                <kgs min="501" max="1250">16.50</kgs>
+            </plts>
+        </economy>
+    </zone>
+        <zone name="ZONE 1">
+            <postCodes>AL, BB, BD, BL, BS, CB, CH, CW, DE, DN, DY, GL, HD, HP, HR, HX, L, LD, LE, LS, LU, M, MK, NN, NG, OL, OX, PE, PR, RG, S, SG, SK, ST, TF, WA, WF, WN, WR, WV</postCodes>
+            <nextDay>
+                <plts min="1" max="3">
+                    <kgs min="1" max="250">27.25</kgs>
+                    <kgs min="251" max="500">29.75 </kgs>
+                    <kgs min="501" max="1250">32.00</kgs>
+                </plts>
+                <plts min="4" max="6">
+                    <kgs min="1" max="250">26.00</kgs>
+                    <kgs min="251" max="500">28.25 </kgs>
+                    <kgs min="501" max="1250">31.25</kgs>
+                </plts>
+                <plts min="7" max="10">
+                    <kgs min="1" max="250">25.00</kgs>
+                    <kgs min="251" max="500">27.25 </kgs>
+                    <kgs min="501" max="1250">30.00</kgs>
+                </plts>
+            </nextDay>
+            <economy>
+                <plts min="1" max="3">
+                    <kgs min="1" max="250">22.50</kgs>
+                    <kgs min="251" max="500">24.25 </kgs>
+                    <kgs min="501" max="1250">27.25</kgs>
+                </plts>
+                <plts min="4" max="6">
+                    <kgs min="1" max="250">21.50</kgs>
+                    <kgs min="251" max="500">23.25 </kgs>
+                    <kgs min="501" max="1250">26.00</kgs>
+                </plts>
+                <plts min="7" max="10">
+                    <kgs min="1" max="250">20.75</kgs>
+                    <kgs min="251" max="500">22.50 </kgs>
+                    <kgs min="501" max="1250">25.00</kgs>
+                </plts>
+            </economy>
+        </zone>
+        <zone name="ZONE 2">
+            <postCodes>BA, BH, BN, BR, CF, CM, CO, CT, CR, DA, DH, DL, DT, E, EN, FY, GU, HA, HG, HU, IG, IP, KT, LN, ME, N, NE, NP, NR, NW, PO, RH, RM, SE, SM, SN, SO, SP, SR, SS, SW, TN, TW, UB, WD, YO</postCodes>
+            <nextDay>
+                <plts min="1" max="3">
+                    <kgs min="1" max="250">32.25</kgs>
+                    <kgs min="251" max="500">35.25 </kgs>
+                    <kgs min="501" max="1250">38.25</kgs>
+                </plts>
+                <plts min="4" max="6">
+                    <kgs min="1" max="250">30.75</kgs>
+                    <kgs min="251" max="500">33.50 </kgs>
+                    <kgs min="501" max="1250">36.25</kgs>
+                </plts>
+                <plts min="7" max="10">
+                    <kgs min="1" max="250">29.75</kgs>
+                    <kgs min="251" max="500">32.25 </kgs>
+                    <kgs min="501" max="1250">35.00</kgs>
+                </plts>
+            </nextDay>
+            <economy>
+                <plts min="1" max="3">
+                    <kgs min="1" max="250">28.75</kgs>
+                    <kgs min="251" max="500">31.00 </kgs>
+                    <kgs min="501" max="1250">33.75</kgs>
+                </plts>
+                <plts min="4" max="6">
+                    <kgs min="1" max="250">27.50</kgs>
+                    <kgs min="251" max="500">29.50 </kgs>
+                    <kgs min="501" max="1250">32.00</kgs>
+                </plts>
+                <plts min="7" max="10">
+                    <kgs min="1" max="250">26.50</kgs>
+                    <kgs min="251" max="500">28.50 </kgs>
+                    <kgs min="501" max="1250">31.00</kgs>
+                </plts>
+            </economy>
+        </zone>
+        <zone name="ZONE 3">
+            <postCodes>CA, EC, EX, LA, LL, PL, SA, SY, TA, TR, TQ, W, WC</postCodes>
+            <nextDay>
+                <plts min="1" max="3">
+                    <kgs min="1" max="250">39.75</kgs>
+                    <kgs min="251" max="500">43.75 </kgs>
+                    <kgs min="501" max="1250">45.00</kgs>
+                </plts>
+                <plts min="4" max="6">
+                    <kgs min="1" max="250">37.75</kgs>
+                    <kgs min="251" max="500">41.25 </kgs>
+                    <kgs min="501" max="1250">42.50</kgs>
+                </plts>
+                <plts min="7" max="10">
+                    <kgs min="1" max="250">36.25</kgs>
+                    <kgs min="251" max="500">39.75 </kgs>
+                    <kgs min="501" max="1250">41.00</kgs>
+                </plts>
+            </nextDay>
+            <economy>
+                <plts min="1" max="3">
+                    <kgs min="1" max="250">35.50</kgs>
+                    <kgs min="251" max="500">38.75 </kgs>
+                    <kgs min="501" max="1250">41.00</kgs>
+                </plts>
+                <plts min="4" max="6">
+                    <kgs min="1" max="250">33.75</kgs>
+                    <kgs min="251" max="500">36.75 </kgs>
+                    <kgs min="501" max="1250">38.75</kgs>
+                </plts>
+                <plts min="7" max="10">
+                    <kgs min="1" max="250">32.50</kgs>
+                    <kgs min="251" max="500">35.50 </kgs>
+                    <kgs min="501" max="1250">37.25</kgs>
+                </plts>
+            </economy>
+        </zone>
+        <zone name="ZONE 4">
+            <postCodes>DG, EH, FK, G, ML, TD, </postCodes>
+            <nextDay>
+                <plts min="1" max="3">
+                    <kgs min="1" max="250">45.00</kgs>
+                    <kgs min="251" max="500">49.75 </kgs>
+                    <kgs min="501" max="1250">49.75</kgs>
+                </plts>
+                <plts min="4" max="6">
+                    <kgs min="1" max="250">42.50</kgs>
+                    <kgs min="251" max="500">47.00 </kgs>
+                    <kgs min="501" max="1250">47.00</kgs>
+                </plts>
+                <plts min="7" max="10">
+                    <kgs min="1" max="250">41.00</kgs>
+                    <kgs min="251" max="500">45.00 </kgs>
+                    <kgs min="501" max="1250">45.00</kgs>
+                </plts>
+            </nextDay>
+            <economy>
+                <plts min="1" max="3">
+                    <kgs min="1" max="250">39.50</kgs>
+                    <kgs min="251" max="500">43.50 </kgs>
+                    <kgs min="501" max="1250">43.50</kgs>
+                </plts>
+                <plts min="4" max="6">
+                    <kgs min="1" max="250">37.50</kgs>
+                    <kgs min="251" max="500">41.00 </kgs>
+                    <kgs min="501" max="1250">41.00</kgs>
+                </plts>
+                <plts min="7" max="10">
+                    <kgs min="1" max="250">36.00</kgs>
+                    <kgs min="251" max="500">39.50 </kgs>
+                    <kgs min="501" max="1250">39.50</kgs>
+                </plts>
+            </economy>
+        </zone>
+        <zone name="ZONE 5">
+            <postCodes>DD, KY, PH</postCodes>
+            <nextDay>
+                <plts min="1" max="3">
+                    <kgs min="1" max="250">61.00</kgs>
+                    <kgs min="251" max="500">67.50 </kgs>
+                    <kgs min="501" max="1250">67.50</kgs>
+                </plts>
+                <plts min="4" max="6">
+                    <kgs min="1" max="250">57.25</kgs>
+                    <kgs min="251" max="500">63.25 </kgs>
+                    <kgs min="501" max="1250">63.25</kgs>
+                </plts>
+                <plts min="7" max="10">
+                    <kgs min="1" max="250">55.00</kgs>
+                    <kgs min="251" max="500">60.75 </kgs>
+                    <kgs min="501" max="1250">60.75</kgs>
+                </plts>
+            </nextDay>
+            <economy>
+                <plts min="1" max="3">
+                    <kgs min="1" max="250">44.50</kgs>
+                    <kgs min="251" max="500">48.75 </kgs>
+                    <kgs min="501" max="1250">48.75</kgs>
+                </plts>
+                <plts min="4" max="6">
+                    <kgs min="1" max="250">42.00</kgs>
+                    <kgs min="251" max="500">46.00 </kgs>
+                    <kgs min="501" max="1250">46.00</kgs>
+                </plts>
+                <plts min="7" max="10">
+                    <kgs min="1" max="250">40.50</kgs>
+                    <kgs min="251" max="500">44.25 </kgs>
+                    <kgs min="501" max="1250">44.25</kgs>
+                </plts>
+            </economy>
+        </zone>
+        <zone name="ZONE 6" >
+            <postCodes>ABI, ABI, IVI</postCodes>
+            <nextDay days="2">
+                <plts min="1" max="3">
+                    <kgs min="1" max="250">72.00</kgs>
+                    <kgs min="251" max="500">80.00 </kgs>
+                    <kgs min="501" max="1250">80.00</kgs>
+                </plts>
+                <plts min="4" max="6">
+                    <kgs min="1" max="250">67.50</kgs>
+                    <kgs min="251" max="500">74.75 </kgs>
+                    <kgs min="501" max="1250">74.75</kgs>
+                </plts>
+                <plts min="7" max="10">
+                    <kgs min="1" max="250">64.50</kgs>
+                    <kgs min="251" max="500">71.75 </kgs>
+                    <kgs min="501" max="1250">71.75</kgs>
+                </plts>
+            </nextDay>
+            <economy>
+                <plts min="1" max="3">
+                    <kgs min="1" max="250">55.50</kgs>
+                    <kgs min="251" max="500">61.25</kgs>
+                    <kgs min="501" max="1250">61.25</kgs>
+                </plts>
+                <plts min="4" max="6">
+                    <kgs min="1" max="250">52.25</kgs>
+                    <kgs min="251" max="500">57.50</kgs>
+                    <kgs min="501" max="1250">57.50</kgs>
+                </plts>
+                <plts min="7" max="10">
+                    <kgs min="1" max="250">50.00</kgs>
+                    <kgs min="251" max="500">55.25</kgs>
+                    <kgs min="501" max="1250">55.25</kgs>
+                </plts>
+            </economy>
+        </zone>
+        <zone name="OFFSHORE" >
+            <postCodes>JE, GE</postCodes>
+            <economy>
+                <plts min="1" max="3">
+                    <kgs min="1" max="250">105.00</kgs>
+                    <kgs min="251" max="500">105.00</kgs>
+                    <kgs min="501" max="1250">110.00</kgs>
+                </plts>
+                <plts min="4" max="6">
+                    <kgs min="1" max="250">105.00</kgs>
+                    <kgs min="251" max="500">105.00</kgs>
+                    <kgs min="501" max="1250">110.00</kgs>
+                </plts>
+                <plts min="7" max="10">
+                    <kgs min="1" max="250">105.00</kgs>
+                    <kgs min="251" max="500">105.00 </kgs>
+                    <kgs min="501" max="1250">110.00</kgs>
+                </plts>
+            </economy>
+        </zone>
+    </zones>
+    <platesServices>
+        <paletsService>
+            <code>1</code>
+            <type>Next Day</type>
+            <charges>0.0</charges>
+        </paletsService>
+        <paletsService>
+            <code>1AM</code>
+            <type>Next Day AM</type>
+            <charges>15.0</charges>
+        </paletsService>
+        <paletsService>
+            <code>1BD</code>
+            <type>Next Day Booked</type>
+            <charges>0.0</charges>
+        </paletsService>
+        <paletsService>
+            <code>1BO</code>
+            <type>Next Day Timed</type>
+            <charges>17.0</charges>
+        </paletsService>
+        <paletsService>
+            <code>1P10</code>
+            <type>Next Day Pre-10</type>
+            <charges>21.0</charges>
+        </paletsService>
+        <paletsService>
+            <code>1P9</code>
+            <type>Next Day Pre-9</type>
+            <charges>25.0</charges>
+        </paletsService>
+        <paletsService>
+            <code>1S</code>
+            <type>Saturday AM</type>
+            <charges>55.0</charges>
+        </paletsService>
+        <paletsService>
+            <code>1SAM</code>
+            <type>Saturday AM</type>
+            <charges>70.0</charges>
+        </paletsService>
+        <paletsService>
+            <code>1S10</code>
+            <type>Saturday Pre-10</type>
+            <charges>76.0</charges>
+        </paletsService>
+        <paletsService>
+            <code>1S9</code>
+            <type>Saturday Pre-9</type>
+            <charges>80.0</charges>
+        </paletsService>
+        <paletsService>
+            <code>1SBO</code>
+            <type>Saturday Timed</type>
+            <charges>72.0</charges>
+        </paletsService>
+    </platesServices>
+</ukPaletsPrices>

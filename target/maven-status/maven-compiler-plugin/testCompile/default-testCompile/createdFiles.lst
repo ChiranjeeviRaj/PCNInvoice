@@ -1,0 +1,6 @@
+GenerateInvoice.class
+uk\pcn\invoice\service\AbstractServiceTest.class
+uk\pcn\invoice\util\PCNUtilTest.class
+uk\pcn\invoice\common\CustomerNamesTest.class
+uk\pcn\invoice\service\RateCardServiceTest.class
+uk\pcn\invoice\util\FileUtilTest.class
