@@ -1,6 +1,0 @@
-uk\pcn\invoice\util\XMLUtillTest.class
-uk\pcn\invoice\common\CustomerNamesTest.class
-uk\pcn\invoice\service\AbstractServiceTest.class
-GenerateInvoice.class
-uk\pcn\invoice\service\RateCardServiceTest.class
-uk\pcn\invoice\util\PCNUtilTest.class
