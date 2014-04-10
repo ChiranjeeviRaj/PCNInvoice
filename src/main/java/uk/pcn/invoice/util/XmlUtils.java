@@ -3,9 +3,13 @@ package uk.pcn.invoice.util;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.net.URL;
 
+import javax.faces.context.FacesContext;
+import javax.servlet.ServletContext;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -23,7 +27,9 @@ import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -34,6 +40,8 @@ import uk.pcn.invoice.service.PCNException;
 
 @Component
 public class XmlUtils {
+	
+	private Logger log = Logger.getLogger(XmlUtils.class);
 
 	public XmlUtils() {
 	}
@@ -168,5 +176,39 @@ public class XmlUtils {
             doc.getDocumentElement().normalize();
             return doc.getElementsByTagName(tag);
 	}
+	
 
+	//file:\E:\workspace-pcn\.metadata\.plugins\org.eclipse.wst.server.core\tmp0\wtpwebapps\PCNInvoice\WEB-INF\classes\rate_cards\parcels\xls\THERMOSCREEENS_LTD_YODEL.xml
+	public String getFile(String fileName, String type){
+    	String classpathLocation = "WEB-INF/classes/"  +"rate_cards" + File.separatorChar + type +  
+    			File.separatorChar + "xls"+ File.separatorChar + fileName;
+    	log.debug("classpathLocation :" +classpathLocation);
+
+		return getClassPath() + classpathLocation;
+		//Chanege the retrun type for remote openshift server ***********************8
+    	//String path1 = "/var/lib/openshift/53393c4a5973ca750300004d/jbossews/work/Catalina/localhost/_/" + classpathLocation;
+    	//return path1;
+	}
+
+	/**
+	 * It returns context root of the app on tomcat.
+	 * openShift /var/lib/openshift/53393c4a5973ca750300004d/jbossews/work/Catalina/localhost/_/
+	 * @return
+	 */
+	public String getClassPath(){
+        ServletContext servletContext = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
+        String webContentRoot = servletContext.getContextPath();
+        log.debug("webContentRoot :" +webContentRoot);
+		URL url = XmlUtils.class.getResource("XmlUtils.class");
+        log.debug("url :" +url);
+        if(webContentRoot == null || webContentRoot == "") {
+        	webContentRoot = "_";
+            log.debug("webContentRoot11 :" +webContentRoot);
+        }
+		String[] split = StringUtils.split(url.toString(), webContentRoot);
+		log.debug("split :" +split);
+		String path =  split[0].replaceAll("file:", "");
+		log.debug("path :" +path);
+		return path + webContentRoot + File.separatorChar;
+	}
 }

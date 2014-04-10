@@ -1,11 +1,14 @@
 package uk.pcn.invoice.util;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+
 
 public class PCNUtil {
 	
 	public static String filePath;
 	public static String invoiceNumStr;
-	
 	public static boolean lodonPostCodeCheck(String postCode){
 		//E1,W1, NW1, SW1, SE1
 		if(postCode != null && !postCode.isEmpty()){
@@ -49,6 +52,10 @@ public class PCNUtil {
 			}
 		return false;
 	}
-	
+
+	public static Date getCurrentDate(){
+		//String date = new SimpleDateFormat("yyyy/M/dd").format(new Date());
+		return new Date();
+	}
 	
 }

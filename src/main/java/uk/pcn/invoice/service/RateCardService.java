@@ -1,16 +1,24 @@
 package uk.pcn.invoice.service;
 
 import java.math.BigDecimal;
+import java.net.URL;
 import java.util.List;
+
+import javax.faces.context.FacesContext;
+import javax.servlet.ServletContext;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
+import uk.pcn.invoice.common.AddressType;
 import uk.pcn.invoice.common.CustomerNames;
 import uk.pcn.invoice.common.RateCardXML;
 import uk.pcn.invoice.common.ServiceNames;
 import uk.pcn.invoice.common.ServiceType;
+import uk.pcn.invoice.model.Address;
 import uk.pcn.invoice.model.Item;
 import uk.pcn.invoice.model.external.palets.Economy;
 import uk.pcn.invoice.model.external.palets.Kgs;
@@ -23,7 +31,6 @@ import uk.pcn.invoice.model.external.parcels.CongestionCharge;
 import uk.pcn.invoice.model.external.parcels.PricePerWeight;
 import uk.pcn.invoice.model.external.parcels.Service;
 import uk.pcn.invoice.model.external.parcels.Services;
-import uk.pcn.invoice.util.FileUtil;
 import uk.pcn.invoice.util.PCNUtil;
 import uk.pcn.invoice.util.XmlUtils;
 
@@ -34,8 +41,7 @@ public class RateCardService implements IRateCardService {
 	@Autowired
 	private XmlUtils xmlUtils;
 
-	private static final String priceCardsdestination = FileUtil.getClassPath()
-			+ "util\\priceCards\\";
+	//private final String priceCardsdestination = xmlUtils.getClassPath()	+ "util\\priceCards\\";
 	private static final String priceCardExt = ".xml";
 
 	// this method parse the rate card by using given service provider, shipping
@@ -47,9 +53,13 @@ public class RateCardService implements IRateCardService {
 		double ourPrice = 0;
 		double weight = 0;
 		double londonSurcharge = 0;
-		String path = priceCardsdestination
+		String path = xmlUtils.getFile(getRateCardFile(item.getShippingAccountName(), 
+				item.getServiceProvider()) + priceCardExt	, "parcels");
+		log.debug("Parcels Rate card path : " + path);
+		/*String path =  getClassPath()
+				+ "util\\priceCards\\"
 				+ getRateCardFile(item.getShippingAccountName(),
-						item.getServiceProvider()) + priceCardExt;
+						item.getServiceProvider()) + priceCardExt;*/
 		//log.debug("Rate card path : " + path);
 		Services rateCards = (Services) xmlUtils.unmarshal(
 				Services.class, path);
@@ -133,7 +143,13 @@ public class RateCardService implements IRateCardService {
 	}
 
 	private double addLondonSurcharge(Item item, double londonSurcharge) {
-		if(item.getInLondonCongestion().trim().equalsIgnoreCase("Yes") || PCNUtil.lodonPostCodeCheck(item.getDPostCode())){
+		String postCode = null;
+		for (Address address : item.getAddresses()) {
+			if(address.getAddersstype().equalsIgnoreCase(AddressType.DELIVERY.toString())){
+				postCode = address.getPostCode();
+			}
+		}
+		if(item.getInLondonCongestion().trim().equalsIgnoreCase("Yes") || PCNUtil.lodonPostCodeCheck(postCode)){
 			return londonSurcharge;
 		}
 		return 0;
@@ -197,9 +213,12 @@ public class RateCardService implements IRateCardService {
 	}
 	@Override
 	public double getFuelSurcharge(Item item){
-		String path = priceCardsdestination
+/*		String path =  getClassPath()
+				+ "util\\priceCards\\"
 				+ getRateCardFile(item.getShippingAccountName(),
-						item.getServiceProvider()) + priceCardExt;
+						item.getServiceProvider()) + priceCardExt;*/
+		String path = xmlUtils.getFile(getRateCardFile(item.getShippingAccountName(), 
+				item.getServiceProvider()) + priceCardExt	, "parcels");
 		log.debug("Rate card path : " + path);
 		Services rateCards = (Services) xmlUtils.unmarshal(
 				Services.class, path);
@@ -304,5 +323,16 @@ public class RateCardService implements IRateCardService {
 			return ServiceType.ECONOMY;
 		}
 	}
-	
+/*	public String getClassPath(){
+        ServletContext servletContext = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
+        String webContentRoot = servletContext.getContextPath();
+        log.debug("webContentRoot :" +webContentRoot);
+		URL url = XmlUtils.class.getResource("XmlUtils.class");
+        log.debug("url :" +url);
+		String[] split = StringUtils.split(url.toString(), webContentRoot);
+		log.debug("split :" +split);
+		String path =  split[0].replaceAll("file:/", "");
+		log.debug("path :" +path);
+		return path + webContentRoot + "\\";
+	}*/
 }

@@ -24,70 +24,79 @@ import javax.faces.context.FacesContext;
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.primefaces.model.DefaultStreamedContent;
-import org.primefaces.model.StreamedContent;
-import org.primefaces.model.UploadedFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import uk.pcn.invoice.main.model.AddressType;
-import uk.pcn.invoice.model.Addersstype;
+import uk.pcn.invoice.common.AddressType;
 import uk.pcn.invoice.model.Address;
 import uk.pcn.invoice.model.Invoice;
 import uk.pcn.invoice.model.Item;
+import uk.pcn.invoice.model.palets.InvoiceRequestModel;
 import uk.pcn.invoice.model.palets.Palet;
 import uk.pcn.invoice.service.IInvoiceService;
-import uk.pcn.invoice.util.FileUtil;
 import uk.pcn.invoice.util.PCNUtil;
 import uk.pcn.invoice.util.XlsReader;
+import uk.pcn.invoice.util.XmlUtils;
 
 
 @Component("invoiceMB")
 @ManagedBean(name="invoiceMB")
 @RequestScoped
+//@Lazy
 public class InvoiceManagedBean implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	private Logger log = Logger.getLogger(InvoiceManagedBean.class);
-	private UploadedFile file; 
-	private StreamedContent pdfInvoiceFile;
-	private int fileType = 0;
-	private String destination = FileUtil.getClassPath() + "util\\xls\\";
+	@Autowired
+	private XmlUtils xmlUtils;
+	
+	private InvoiceRequestModel im;
+
+	//private String destination = getClassPath() + "util\\xls\\";
 
 	@Autowired
 	IInvoiceService invoiceService;
 	
-	public InvoiceManagedBean() {
+	public InvoiceManagedBean() throws IOException {
         log.debug("From InvoiceManagedBean ******************");
+        	System.out.println(System.getProperty("java.io.tmpdir"));
+	}
+	
+	public void navRequestInvoice(){
+		im = new InvoiceRequestModel();
+		
 	}
 
 	 public void uploadXlsAndGenerateInvoice() {  
 		 	String message;
-		 	if(file != null){
-	        if(fileType!=0){
+		 	if(im.getFile() != null){
+	        if(im.getFileType()!=0){
 	        try {
-	            copyFile(file.getFileName(), file.getInputstream());
+	            copyFile(im.getFile().getFileName(), im.getFile().getInputstream());
+	            
 	        } catch (IOException e) {
 	            e.printStackTrace();
 	        }
-	        XlsReader xlsReader = new XlsReader(destination + file.getFileName());
-	        if(fileType == 1){
+    	   	String path = System.getProperty("java.io.tmpdir")+ File.separatorChar + im.getFile().getFileName();
+	        XlsReader xlsReader = new XlsReader(path);
+	        if(im.getFileType() == 1){
 
 	        Invoice invloice = convertParcelXlsToInvoice(xlsReader);
 	        //set unique id
-	        invoiceService.generateInvoice(invloice);
+
 	        // add to data base
 	       invoiceService.addInvoice(invloice);
+	       
+	       invoiceService.generateInvoice(invloice);
 	        
 	        message = "Successfully Parcels invoice uploaded";
 	        } // palets
 	        else{
-	        	
 	        	 Palet palets = convertPaletsXlsToInvoice(xlsReader);
+		 	        // add to data base
+		 	       invoiceService.addPalets(palets);
 	 	        //set unique id
 	        	 invoiceService.generatePaletsInvoice(palets);
-	 	        // add to data base
-	 	       invoiceService.addPalets(palets);
-	 	        
 	 	       message = "Successfully Palets invoice uploaded";
 	        }
 	        }else{
@@ -104,11 +113,11 @@ public class InvoiceManagedBean implements Serializable {
 				e.printStackTrace();
 			}
 			ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
-			setPdfInvoiceFile(new DefaultStreamedContent(stream, externalContext.getMimeType(invoicePdf.getName()),
-					invoicePdf.getName()));
+			im.setPdfInvoiceFile((new DefaultStreamedContent(stream, externalContext.getMimeType(invoicePdf.getName()),
+					invoicePdf.getName())));
 					
-	        log.debug(message  +  file.getFileName());
-	        FacesMessage msg = new FacesMessage(message, file.getFileName());  
+	        log.debug(message  +  im.getFile().getFileName());
+	        FacesMessage msg = new FacesMessage(message, im.getFile().getFileName());  
 	        FacesContext.getCurrentInstance().addMessage(null, msg);  
 		 	}
 	    }  
@@ -117,6 +126,7 @@ public class InvoiceManagedBean implements Serializable {
 	    	String sheet = "Consignments";
 	    	SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
     		Palet palets = new Palet();
+    		palets.setInvoiceDate(PCNUtil.getCurrentDate());
     		int temp = 0;
     		Date tempDate = null;
     		List<uk.pcn.invoice.model.palets.Pitem> items = new ArrayList<uk.pcn.invoice.model.palets.Pitem>();
@@ -156,6 +166,7 @@ public class InvoiceManagedBean implements Serializable {
 		private Invoice convertParcelXlsToInvoice(XlsReader xlsReader) {
 	    	String sheet = "Sheet1";
 	    	Invoice itemList = new Invoice();
+	    	itemList.setInvoiceDate(PCNUtil.getCurrentDate());
 	    	List<Item> items = new ArrayList<Item>();
 	    	for (int i = 1; i < xlsReader.getRowCount(sheet); i++) {
 	    		Item item = new Item();
@@ -170,9 +181,7 @@ public class InvoiceManagedBean implements Serializable {
 		    	List<Address> address = new ArrayList<Address>(); 
 		    	
 		    	Address collectionAddress = new Address();
-		    	Addersstype addersstype = new Addersstype();
-		    	addersstype.setType(AddressType.COLLECTION.toString());
-		    	collectionAddress.setAddersstype(addersstype);
+		    	collectionAddress.setAddersstype(AddressType.COLLECTION.toString());
 		    	collectionAddress.setCompany(xlsReader.getCellData(sheet, "CollectionAddressCompany", i));
 		    	collectionAddress.setAddressLine1(xlsReader.getCellData(sheet, "CollectionAddressLine1", i));
 		    	collectionAddress.setAddressLine2(xlsReader.getCellData(sheet, "CollectionAddressLine2", i));
@@ -184,13 +193,11 @@ public class InvoiceManagedBean implements Serializable {
 		    	collectionAddress.setContactName(xlsReader.getCellData(sheet, "CollectionContactName", i));
 		    	collectionAddress.setCotactTelephone(xlsReader.getCellData(sheet, "CollectionContactTelephone", i));
 		    	collectionAddress.setEmail(xlsReader.getCellData(sheet, "CollectionContactEMail", i));
-		    	collectionAddress.setItem(item);
+		    	//collectionAddress.setItem(item);
 		    	address.add(collectionAddress);
 		    	
 		    	Address deliveryAddress = new Address();
-		    	Addersstype dAddersstype = new Addersstype();
-		    	dAddersstype.setType(AddressType.DELIVERY.toString());
-		    	deliveryAddress.setAddersstype(dAddersstype);
+		    	deliveryAddress.setAddersstype(AddressType.DELIVERY.toString());
 		    	deliveryAddress.setCompany(xlsReader.getCellData(sheet, "DeliveryAddressCompany", i));
 		    	deliveryAddress.setAddressLine1(xlsReader.getCellData(sheet, "DeliveryAddressLine1", i));
 		    	deliveryAddress.setAddressLine2(xlsReader.getCellData(sheet, "DeliveryAddressLine2", i));
@@ -202,7 +209,8 @@ public class InvoiceManagedBean implements Serializable {
 		    	deliveryAddress.setContactName(xlsReader.getCellData(sheet, "DeliveryContactName", i));
 		    	deliveryAddress.setCotactTelephone(xlsReader.getCellData(sheet, "DeliveryContactTelephone", i));
 		    	deliveryAddress.setEmail(xlsReader.getCellData(sheet, "DeliveryContactEMail", i));
-		    	deliveryAddress.setItem(item);
+		    	//one - one relation
+		    	//deliveryAddress.setItem(item);
 		    	address.add(deliveryAddress);
 		    	
 		    	item.setAddresses(address);
@@ -256,7 +264,7 @@ public class InvoiceManagedBean implements Serializable {
 		    	item.setInLondonCongestion(xlsReader.getCellData(sheet, "InLondonCongestion", i));
 		    	item.setSurcharge(xlsReader.getCellData(sheet, "Surcharge", i));
 		    	
-		    	item.setInvoice(itemList);
+		    	//item.setInvoice(itemList);
 		    	items.add(item);
 		    	
 			}
@@ -267,7 +275,8 @@ public class InvoiceManagedBean implements Serializable {
 		public void copyFile(String fileName, InputStream in) {
 	           try {
 	                // write the inputStream to a FileOutputStream
-	                OutputStream out = new FileOutputStream(new File(destination + fileName));
+	        	   	String path = System.getProperty("java.io.tmpdir")+ File.separatorChar + fileName;
+	                OutputStream out = new FileOutputStream(new File(path));
 	             
 	                int read = 0;
 	                byte[] bytes = new byte[1024];
@@ -280,45 +289,18 @@ public class InvoiceManagedBean implements Serializable {
 	                out.flush();
 	                out.close();
 	             
-	                System.out.println("New file created!");
+	                log.debug("New file created! at "+ path);
 	                } catch (IOException e) {
 	                System.out.println(e.getMessage());
 	                }
 	    } 
 
-	
-	public UploadedFile getFile() {
-		return file;
+	public InvoiceRequestModel getIm() {
+		return im;
 	}
 
-
-	public void setFile(UploadedFile file) {
-		this.file = file;
+	public void setIm(InvoiceRequestModel im) {
+		this.im = im;
 	}
-
-	public int getFileType() {
-		return fileType;
-	}
-
-	public void setFileType(int fileType) {
-		this.fileType = fileType;
-	}
-	
-/*	public void prepDownload() throws Exception {
-	    File file = new File("C:\\file.csv");
-	    InputStream input = new FileInputStream(file);
-	    ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
-	    setDownload(new DefaultStreamedContent(input, externalContext.getMimeType(file.getName()), file.getName()));
-	    System.out.println("PREP = " + download.getName());
-	}
-*/
-	public StreamedContent getPdfInvoiceFile() {
-		return this.pdfInvoiceFile;
-	}
-	
-	public void setPdfInvoiceFile(StreamedContent pdfInvoiceFile){
-		this.pdfInvoiceFile = pdfInvoiceFile;
-	}
-
 
 }

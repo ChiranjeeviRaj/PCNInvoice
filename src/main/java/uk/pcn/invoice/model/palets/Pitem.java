@@ -1,20 +1,36 @@
 package uk.pcn.invoice.model.palets;
 
 import java.io.Serializable;
-import javax.persistence.*;
 import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 
 /**
  * The persistent class for the pitems database table.
  * 
  */
+//@SequenceGenerator(name = "id", sequenceName = "some_set_seq", initialValue = 1, allocationSize = 1)
 @Entity
 @Table(name="pitems")
 public class Pitem implements Serializable {
 	private static final long serialVersionUID = 1L;
-
+	
 	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name= "pitems_id")
+	private int pitemsId;
+
 	private int con;
 
 	@Temporal(TemporalType.DATE)
@@ -43,8 +59,13 @@ public class Pitem implements Serializable {
 	private String timeReq;
 
 	//bi-directional many-to-one association to Palet
-	@ManyToOne
-	@JoinColumn(name="palets_id")
+/*	@ManyToOne
+	@JoinColumn(name="palet_id")
+	*/
+    @ManyToOne
+    @JoinColumn(name="palet_id",
+                insertable=true, updatable=true,
+                nullable=true)
 	private Palet palet;
 
 	public Pitem() {
@@ -152,6 +173,14 @@ public class Pitem implements Serializable {
 
 	public void setPalet(Palet palet) {
 		this.palet = palet;
+	}
+
+	public int getPitemsId() {
+		return pitemsId;
+	}
+
+	public void setPitemsId(int pitemsId) {
+		this.pitemsId = pitemsId;
 	}
 
 }

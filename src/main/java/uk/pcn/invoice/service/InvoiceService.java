@@ -1,6 +1,7 @@
 package uk.pcn.invoice.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -9,7 +10,6 @@ import uk.pcn.invoice.model.Invoice;
 import uk.pcn.invoice.model.palets.Palet;
 
 @Component
-@Transactional()
 public class InvoiceService implements IInvoiceService{
 	
 	@Autowired

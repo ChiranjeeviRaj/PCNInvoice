@@ -1,35 +1,43 @@
 package uk.pcn.invoice.model;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
+import org.hibernate.annotations.IndexColumn;
+
 
 /**
  * The persistent class for the invoice database table.
  * 
  */
-@Entity 
+@Entity
+@Table(name = "invoice")
 public class Invoice implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	
-	@GenericGenerator(name="table-hilo-generator", strategy="org.hibernate.id.TableHiLoGenerator",
-			  parameters={@Parameter(value="hibernate_id_generation", name="table")})
-
-			 //I use the generator configured above
-	@GeneratedValue(generator="table-hilo-generator")
-	@Id 
+	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	private int invoiceId;
+	
+	@Temporal(TemporalType.DATE)
+	private Date invoiceDate;
 
 	//bi-directional many-to-one association to Item
-	@OneToMany(mappedBy="invoice")
+    @OneToMany(cascade={CascadeType.ALL})
+    @JoinColumn(name="invoiceId")
+    @IndexColumn(name="idx")
 	private List<Item> items;
 
 	public Invoice() {
@@ -63,6 +71,14 @@ public class Invoice implements Serializable {
 		item.setInvoice(null);
 
 		return item;
+	}
+
+	public Date getInvoiceDate() {
+		return invoiceDate;
+	}
+
+	public void setInvoiceDate(Date invoiceDate) {
+		this.invoiceDate = invoiceDate;
 	}
 
 }

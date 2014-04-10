@@ -1,33 +1,46 @@
 package uk.pcn.invoice.model.palets;
 
 import java.io.Serializable;
-import javax.persistence.*;
-
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
-
+import java.util.Date;
 import java.util.List;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import org.hibernate.annotations.IndexColumn;
 
 
 /**
  * The persistent class for the palets database table.
  * 
  */
+//@SequenceGenerator(name = "id", sequenceName = "some_set_seq", initialValue = 1, allocationSize = 1)
 @Entity
-@Table(name="palets")
+@Table(name="palet")
 public class Palet implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	@GenericGenerator(name="table-hilo-generator", strategy="org.hibernate.id.TableHiLoGenerator",
-			  parameters={@Parameter(value="hibernate_id_generation", name="table")})
-
-			 //I use the generator configured above
-	@GeneratedValue(generator="table-hilo-generator")
 	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name="palet_id")
 	private int id;
+	
+	@Temporal(TemporalType.DATE)
+	private Date invoiceDate;
 
 	//bi-directional many-to-one association to Pitem
-	@OneToMany(mappedBy="palet")
+    @OneToMany(cascade={CascadeType.ALL})
+    @JoinColumn(name="palet_id")
+    @IndexColumn(name="idx")
 	private List<Pitem> pitems;
 
 	public Palet() {
@@ -62,5 +75,14 @@ public class Palet implements Serializable {
 
 		return pitem;
 	}
+
+	public Date getInvoiceDate() {
+		return invoiceDate;
+	}
+
+	public void setInvoiceDate(Date invoiceDate) {
+		this.invoiceDate = invoiceDate;
+	}
+
 
 }

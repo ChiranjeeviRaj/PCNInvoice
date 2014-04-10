@@ -1,8 +1,10 @@
 package uk.pcn.invoice.service;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -19,7 +21,7 @@ import uk.pcn.invoice.model.Invoice;
 import uk.pcn.invoice.model.Item;
 import uk.pcn.invoice.model.external.palets.UkPaletsPrices;
 import uk.pcn.invoice.model.palets.Palet;
-import uk.pcn.invoice.util.FileUtil;
+import uk.pcn.invoice.model.palets.Pitem;
 import uk.pcn.invoice.util.PCNUtil;
 import uk.pcn.invoice.util.XmlUtils;
 
@@ -28,7 +30,6 @@ import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.Font.FontFamily;
-import com.itextpdf.text.Image;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Phrase;
@@ -41,6 +42,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 		private Logger log = Logger.getLogger(GenerateInvoiceService.class);
 	    public static final Font FONT = new Font(FontFamily.TIMES_ROMAN, 8, Font.NORMAL );
 	    public static final Font BOLD = new Font(FontFamily.HELVETICA, 8, Font.BOLD);
+	    public static final Font TITLE = new Font(FontFamily.HELVETICA, 12, Font.BOLD);
 		private String invoiceNumberStr;
 		
 		@Autowired
@@ -49,24 +51,19 @@ import com.itextpdf.text.pdf.PdfWriter;
 		private Properties properties; 
 		@Autowired
 		private IRateCardService rateCardService;
-		//"E:\\workspace-pcn\\PCNInvoice"
-		private static final String pdfsDestination = FileUtil.getClassPath() + "util\\invoice_pdf\\";
-		
-		private static final String priceCardsdestination = FileUtil.getClassPath()
-				+ "util\\priceCards\\";
-		private static final String priceCardExt = ".xml";
-
 
 		public void createPdf(Invoice invoiceList ){
 			Document document = new Document();
 			generateInvoiceNumber(invoiceList);
-			String path = pdfsDestination + invoiceNumberStr + ".pdf";
+			String path = System.getProperty("java.io.tmpdir")  + File.separatorChar +PCNUtil.invoiceNumStr + ".pdf";
 			PCNUtil.filePath = path;
 		      try {
 				PdfWriter.getInstance(document, new FileOutputStream(path));
 			    document.open();
 			    addMetaData(document);
 				Item firstItem = invoiceList.getItems().get(0);
+				document.add(new Phrase("PCN (UK) LTD", TITLE));
+				document.add(Chunk.NEWLINE);
 			    addHeader(document, getCustomerName(firstItem.getShippingAccountName()));
 			    document.add(Chunk.NEWLINE);
 			    addCotent(invoiceList, document);
@@ -96,35 +93,37 @@ import com.itextpdf.text.pdf.PdfWriter;
 			}else if(ShippingAccountName.contains("BIDDLE")){
 				invoiceNumberStr = "BIDD";
 			}	
-			PCNUtil.invoiceNumStr = invoiceNumberStr;
+			PCNUtil.invoiceNumStr = invoiceNumberStr + PCNUtil.invoiceNumStr;
 		}
 		private void addCotent(Invoice invoiceList, Document document)
 				throws DocumentException {
 			double totalPrice = 0;
 			double itemPrice = 0;
-			PdfPTable itemsTable = new PdfPTable(9);	
+			PdfPTable itemsTable = new PdfPTable(10);	
 			itemsTable.setWidthPercentage(100);
-			itemsTable.setWidths(new int[]{4, 2, 4, 2, 1, 4, 2, 1, 1});
+			itemsTable.setWidths(new int[]{4, 4, 2, 4, 2, 1, 4, 2, 1, 1});
 			
 			PdfPTable totalPriceTable = new PdfPTable(4);	
 			totalPriceTable.setWidthPercentage(100);
 			totalPriceTable.setWidths(new int[]{4, 4,3,2});
 
-			itemsTable.addCell(new Phrase("DeliveryAddressComapny", BOLD));
-			itemsTable.addCell(new Phrase("DeliveryPostcode", BOLD));
-			itemsTable.addCell(new Phrase("DeliveryContactName", BOLD));
-			itemsTable.addCell(new Phrase("CollectionDate", BOLD));
-			itemsTable.addCell(new Phrase("Number", BOLD));
-			itemsTable.addCell(new Phrase("CourierConsignmentTrackingNumber", BOLD));
+			itemsTable.addCell(new Phrase("Service", BOLD));
+			itemsTable.addCell(new Phrase("Address", BOLD));
+			itemsTable.addCell(new Phrase("Postcode", BOLD));
+			itemsTable.addCell(new Phrase("Name", BOLD));
+			itemsTable.addCell(new Phrase("Date", BOLD));
+			itemsTable.addCell(new Phrase("Parcels", BOLD));
+			itemsTable.addCell(new Phrase("Consignment no", BOLD));
 			itemsTable.addCell(new Phrase("Reference1", BOLD));
-			itemsTable.addCell(new Phrase("ShipmentWeight", BOLD));
+			itemsTable.addCell(new Phrase("Weight", BOLD));
 			itemsTable.addCell(new Phrase("Price", BOLD));
 			
 			
 			for (Item item : invoiceList.getItems()) {
 				List<Address> addresses = item.getAddresses();
+				itemsTable.addCell(new Phrase(item.getProviderService(), FONT));
 				for (Address address : addresses) {
-					if(address.getAddersstype().getType().equals("DELIVERY")){
+					if(address.getAddersstype().equals("DELIVERY")){
 				    itemsTable.addCell(new Phrase(address.getCompany(), FONT));
 				    itemsTable.addCell(new Phrase(address.getPostCode(), FONT));
 				    itemsTable.addCell(new Phrase(address.getContactName(), FONT));
@@ -135,8 +134,8 @@ import com.itextpdf.text.pdf.PdfWriter;
 			    itemsTable.addCell(new Phrase(item.getNumberOfParcels().toBigInteger().toString(), FONT));
 			    itemsTable.addCell(new Phrase(item.getCourierConsignmentTrackingNumber(), FONT));
 			    itemsTable.addCell(new Phrase(item.getReference1(), FONT));
-			    itemsTable.addCell(new Phrase(Double.toString(item.getParcelWeight()), FONT));
-			    itemsTable.addCell(new Phrase("£" +Double.toString(itemPrice), FONT));
+			    itemsTable.addCell(new Phrase(dF(item.getParcelWeight()), FONT));
+			    itemsTable.addCell(new Phrase(properties.getProperty("pound.currency") +dF(round(itemPrice, 3)), FONT));
 			}
 			
 			document.add(itemsTable);
@@ -145,24 +144,24 @@ import com.itextpdf.text.pdf.PdfWriter;
 			totalPriceTable.addCell(new Phrase("PCN (UK) LTD", BOLD));
 			totalPriceTable.addCell(getBlankCell());
 			totalPriceTable.addCell(new Phrase("SUB TOTAL", BOLD));
-			totalPriceTable.addCell(new Phrase("£" +Double.toString(roundDouble(totalPrice)), FONT));
+			totalPriceTable.addCell(new Phrase(properties.getProperty("pound.currency") +dF(round(totalPrice, 3)), FONT));
 			
 			totalPriceTable.addCell(new Phrase("UNIT 3 PARAGON WAY", BOLD));
 			totalPriceTable.addCell(getBlankCell());
 			totalPriceTable.addCell(new Phrase("FUEL  SURCHARGE", BOLD));
 			double fuelSurcharge = totalPrice * (rateCardService.getFuelSurcharge(invoiceList.getItems().get(0))/100);
-			totalPriceTable.addCell(new Phrase("£" +Double.toString(roundDouble(fuelSurcharge)), FONT));
+			totalPriceTable.addCell(new Phrase(properties.getProperty("pound.currency") +dF(round(fuelSurcharge, 3)), FONT));
 			
 			totalPriceTable.addCell(new Phrase("BOYTON ROAD INDUSTRIAL ESTATE", BOLD));
 			totalPriceTable.addCell(getBlankCell());
 			totalPriceTable.addCell(new Phrase("VAT @ 20%", BOLD));
 			double vat = (totalPrice * 0.2);
-			totalPriceTable.addCell(new Phrase("£" +Double.toString(roundDouble(vat)), FONT));
+			totalPriceTable.addCell(new Phrase(properties.getProperty("pound.currency") +dF(round(vat, 3)), FONT));
 			
 			totalPriceTable.addCell(new Phrase("COVENTRY", BOLD));
 			totalPriceTable.addCell(getBlankCell());
 			totalPriceTable.addCell(new Phrase("INVOICE TOTAL", BOLD));
-			totalPriceTable.addCell(new Phrase("£" +Double.toString(roundDouble(totalPrice + fuelSurcharge + vat)), BOLD));
+			totalPriceTable.addCell(new Phrase(properties.getProperty("pound.currency") +dF(round(totalPrice + fuelSurcharge + vat, 3)), BOLD));
 			
 			totalPriceTable.addCell(new Phrase("CV7 9QS", BOLD));
 			totalPriceTable.addCell(getBlankCell());
@@ -190,7 +189,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 
 				header.addCell(new Phrase(getAddressProperty(name, ".company"), BOLD));
 				header.addCell(getBlankCell());
-				header.addCell(new Phrase("INVOICE : " + invoiceNumberStr, BOLD));
+				header.addCell(new Phrase("INVOICE : " + PCNUtil.invoiceNumStr, BOLD));
 				
 				header.addCell(new Phrase(getAddressProperty(name, ".addressLine1"), BOLD));
 				header.addCell(getBlankCell());
@@ -200,10 +199,10 @@ import com.itextpdf.text.pdf.PdfWriter;
 				header.addCell(getBlankCell());
 				header.addCell(new Phrase("OUR REF : " , BOLD));
 
-			Image companyLogo = Image.getInstance(pdfsDestination + "pcn_logo.png");
-			companyLogo.scalePercent(50);
-			
-			document.add(companyLogo);
+			//Image companyLogo = Image.getInstance(getClassPath() + "util\\invoice_pdf\\" + "pcn_logo.png");
+			//companyLogo.scalePercent(50);
+			//Company logo is removed base on requirement.
+			//document.add(companyLogo);
 			document.add(header);
 			
 
@@ -219,8 +218,17 @@ import com.itextpdf.text.pdf.PdfWriter;
 				doc.addTitle("Invoice");
 				doc.setPageSize(PageSize.LETTER);
 			  }
-		private double roundDouble(double value){
-			return Math.round(( value * 100.0 ) / 100.0);
+		public double round(double value, int places) {
+		    if (places < 0) throw new IllegalArgumentException();
+
+		    long factor = (long) Math.pow(10, places);
+		    value = value * factor;
+		    long tmp = Math.round(value);
+		    return (double) tmp / factor;
+		}
+		
+		public String dF(double d){
+			return new DecimalFormat("##.00").format(d);
 		}
 		
 		private PdfPCell getBlankCell(){
@@ -228,22 +236,25 @@ import com.itextpdf.text.pdf.PdfWriter;
 			blankCell.setBorder(Rectangle.NO_BORDER);
 			return blankCell;
 		}
-		
-		private String getCustomerName(String ShippingAccountName){
-			if (ShippingAccountName.contains(
+		private String getCustomerName(String name){
+			if (name.contains(
 					"BRIGADE")) {
 				return "brigade";
-			}else if("EMOTIVE".contains(ShippingAccountName.split(" ")[0])){
+			}else if("EMOTIVE".contains(name.split(" ")[0])){
 				return "emotive";
-			}else if(ShippingAccountName.contains("MANOR")){
+			}else if(name.contains("MANOR")){
 				return "manor";
-			} else if(ShippingAccountName.contains("SPHINX")){
+			} else if(name.contains("SPHINX")){
 				return "sphinx";
-			}else if(ShippingAccountName.contains("MANOR")){
+			}else if(name.contains("MANOR")){
 				return "manor";
-			}else if(ShippingAccountName.contains("THERMOSCREENS")){
+			}else if(name.contains("THERMOSCREENS") || name.equalsIgnoreCase(
+					"oscreens") || name.equalsIgnoreCase(
+							"moscreen")){
 				return "thermoscreens";
-			}else if(ShippingAccountName.contains("BIDDLE")){
+			}else if(name.contains("BIDDLE") || name.equalsIgnoreCase(
+					"C/biddle") || name.equalsIgnoreCase(
+							"C/BIDDLE")){
 				return "biddle";
 			}
 			return null;
@@ -253,13 +264,18 @@ import com.itextpdf.text.pdf.PdfWriter;
 		}
 		public String createPaletsPdf(Palet palets) {
 			Document document = new Document();
-			String path = pdfsDestination + invoiceNumberStr + ".pdf";
+			generateInvoiceNumber(palets);
+			String path = System.getProperty("java.io.tmpdir")  + File.separatorChar +PCNUtil.invoiceNumStr + ".pdf";
+			//String path = getClassPath() + "util\\invoice_pdf\\" + invoiceNumberStr + ".pdf";
 			PCNUtil.filePath = path;
 		      try {
 				PdfWriter.getInstance(document, new FileOutputStream(path));
 			    document.open();
 			    addMetaData(document);
-			    addHeader(document, "");
+				document.add(new Phrase("PCN (UK) LTD", TITLE));
+				document.add(Chunk.NEWLINE);
+			    Pitem pitem = palets.getPitems().get(0);
+			    addHeader(document, getCustomerName(pitem.getRef()));
 			    document.add(Chunk.NEWLINE);
 			    addCotent(palets, document);
 		        
@@ -273,13 +289,32 @@ import com.itextpdf.text.pdf.PdfWriter;
 		      return invoiceNumberStr;
 		
 		}
+		private void generateInvoiceNumber(Palet palets) {
+			//to do
+			//oscreens , moscreen, MOSCREEN,  C/biddle, C/BIDDLE
+
+			Pitem firstItem = palets.getPitems().get(0);
+			String ref =firstItem.getRef();
+			if(ref.equalsIgnoreCase(
+					"oscreens") || ref.equalsIgnoreCase(
+							"moscreen"))	{
+				invoiceNumberStr = "THER";
+			}else if(ref.equalsIgnoreCase(
+					"C/biddle") || ref.equalsIgnoreCase(
+							"C/BIDDLE")){
+				invoiceNumberStr = "BIDD";
+			}
+			PCNUtil.invoiceNumStr = invoiceNumberStr + PCNUtil.invoiceNumStr;
+		
+		}
 		private void addCotent(Palet palets, Document document) throws DocumentException {
 
 			double totalPrice = 0;
 			double itemPrice = 0;
 			 //uk.pcn.invoice.model.palets.Pitem tempItem = palets.getPitems().get(0);
-			String path = priceCardsdestination + "palets/UK_PALETS" + priceCardExt;
-			log.debug("Rate card path : " + path);
+			//String path = getClassPath()+ "util\\priceCards\\" + "palets/UK_PALETS" + priceCardExt;
+			String path = xmlUtils.getFile("UK_PALETS.xml", "palets");
+			log.debug("Palets Rate card path : " + path);
 			UkPaletsPrices ukPaletsPrices = (UkPaletsPrices) xmlUtils.unmarshal(
 					UkPaletsPrices.class, path);
 			PdfPTable itemsTable = new PdfPTable(8);	
@@ -298,7 +333,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 			//itemsTable.addCell(new Phrase("Packs", BOLD));
 			itemsTable.addCell(new Phrase("Qty", BOLD));
 			itemsTable.addCell(new Phrase("Rate", BOLD));
-			itemsTable.addCell(new Phrase("£ Net", BOLD));
+			itemsTable.addCell(new Phrase(properties.getProperty("pound.currency") +" Net", BOLD));
 			
 			
 			for (uk.pcn.invoice.model.palets.Pitem item : palets.getPitems()) {
@@ -309,8 +344,8 @@ import com.itextpdf.text.pdf.PdfWriter;
 			    itemsTable.addCell(new Phrase("", FONT));//Wgt
 			    itemsTable.addCell(new Phrase(Integer.toString(item.getPlts()), FONT));
 			    totalPrice += itemPrice = rateCardService.getPaletPrice(item, ukPaletsPrices);//Qty
-			    itemsTable.addCell(new Phrase(Double.toString(itemPrice), FONT));//Rate
-			    itemsTable.addCell(new Phrase(Double.toString(itemPrice), FONT));//Net
+			    itemsTable.addCell(new Phrase(dF(itemPrice), FONT));//Rate
+			    itemsTable.addCell(new Phrase(dF(itemPrice), FONT));//Net
 			}
 			
 			document.add(itemsTable);
@@ -319,25 +354,25 @@ import com.itextpdf.text.pdf.PdfWriter;
 			totalPriceTable.addCell(new Phrase("PCN (UK) LTD", BOLD));
 			totalPriceTable.addCell(getBlankCell());
 			totalPriceTable.addCell(new Phrase("SUB TOTAL", BOLD));
-			totalPriceTable.addCell(new Phrase(Double.toString(roundDouble(totalPrice)), FONT));
+			totalPriceTable.addCell(new Phrase(dF(round(totalPrice, 3)), FONT));
 			
 			totalPriceTable.addCell(new Phrase("UNIT 3 PARAGON WAY", BOLD));
 			totalPriceTable.addCell(getBlankCell());
 			totalPriceTable.addCell(new Phrase("FUEL  SURCHARGE", BOLD));
 		//	double fuelSurcharge = totalPrice * (rateCardService.getFuelSurcharge(invoiceList.getItems().get(0))/100);
-			//totalPriceTable.addCell(new Phrase(Double.toString(roundDouble(fuelSurcharge)), FONT));
+			//totalPriceTable.addCell(new Phrase(dF(roundDouble(fuelSurcharge)), FONT));
 			totalPriceTable.addCell(getBlankCell());
 			
 			totalPriceTable.addCell(new Phrase("BOYTON ROAD INDUSTRIAL ESTATE", BOLD));
 			totalPriceTable.addCell(getBlankCell());
 			totalPriceTable.addCell(new Phrase("VAT @ 20%", BOLD));
 			double vat = (totalPrice * 0.2);
-			totalPriceTable.addCell(new Phrase(Double.toString(roundDouble(vat)), FONT));
+			totalPriceTable.addCell(new Phrase(dF(round(vat, 3)), FONT));
 			
 			totalPriceTable.addCell(new Phrase("COVENTRY", BOLD));
 			totalPriceTable.addCell(getBlankCell());
 			totalPriceTable.addCell(new Phrase("INVOICE TOTAL", BOLD));
-			totalPriceTable.addCell(new Phrase(Double.toString(roundDouble(totalPrice + vat)), BOLD));
+			totalPriceTable.addCell(new Phrase(dF(round(totalPrice + vat, 3)), BOLD));
 			
 			totalPriceTable.addCell(new Phrase("CV7 9QS", BOLD));
 			totalPriceTable.addCell(getBlankCell());
@@ -358,5 +393,6 @@ import com.itextpdf.text.pdf.PdfWriter;
 		
 			
 		}
+		
 
 }

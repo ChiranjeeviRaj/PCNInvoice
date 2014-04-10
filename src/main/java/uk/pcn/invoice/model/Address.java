@@ -9,10 +9,12 @@ import javax.persistence.*;
  * 
  */
 @Entity
+@Table(name="address")
 public class Address implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	private int addressId;
 
 	private String addressLine1;
@@ -37,12 +39,13 @@ public class Address implements Serializable {
 
 	private String town;
 
-	//bi-directional many-to-one association to Addersstype
-	@ManyToOne
-	private Addersstype addersstype;
+	private String addersstype;
 
 	//bi-directional many-to-one association to Item
-	@ManyToOne
+	 @ManyToOne
+	    @JoinColumn(name="item_id",
+	                insertable=true, updatable=true,
+	                nullable=true)
 	private Item item;
 
 	public Address() {
@@ -144,11 +147,11 @@ public class Address implements Serializable {
 		this.town = town;
 	}
 
-	public Addersstype getAddersstype() {
+	public String getAddersstype() {
 		return this.addersstype;
 	}
 
-	public void setAddersstype(Addersstype addersstype) {
+	public void setAddersstype(String addersstype) {
 		this.addersstype = addersstype;
 	}
 

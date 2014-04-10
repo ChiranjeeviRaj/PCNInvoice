@@ -1,10 +1,25 @@
 package uk.pcn.invoice.model;
 
 import java.io.Serializable;
-import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import org.hibernate.annotations.IndexColumn;
+import uk.pcn.invoice.model.Invoice;
 
 
 /**
@@ -12,10 +27,14 @@ import java.util.List;
  * 
  */
 @Entity
+@Table(name="item")
 public class Item implements Serializable {
 	private static final long serialVersionUID = 1L;
-
 	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
+	@Column(name="item_id")
+	private int itemId;
+
 	private String PHTrackingNumber;
 
 	private String accountNumber;
@@ -46,26 +65,8 @@ public class Item implements Serializable {
 	private String courierConsignmentTrackingNumber;
 
 	private String courierParcelTrackingNumber;
-
-	private String DAddressLine1;
-
-	private String DAddressLine2;
-
-	private String DArea;
-
-	private String DCompany;
-
-	private String DCountry;
-
-	private String DCountryCode;
-
+	
 	private String deleted;
-
-	private String DEmail;
-
-	private String DPostCode;
-
-	private String DTown;
 
 	private String enhancement;
 
@@ -139,11 +140,19 @@ public class Item implements Serializable {
 	private String zoneID;
 
 	//bi-directional many-to-one association to Address
-	@OneToMany(mappedBy="item")
+	//@OneToMany
+	/*@OneToMany(mappedBy="item")*/
+    @OneToMany(cascade={CascadeType.ALL})
+    @JoinColumn(name="item_id")
+    @IndexColumn(name="idx")
 	private List<Address> addresses;
 
 	//bi-directional many-to-one association to Invoice
-	@ManyToOne
+	/*@ManyToOne*/
+	 @ManyToOne
+	    @JoinColumn(name="invoiceId",
+	                insertable=true, updatable=true,
+	                nullable=true)
 	private Invoice invoice;
 
 	public Item() {
@@ -267,86 +276,6 @@ public class Item implements Serializable {
 
 	public void setCourierParcelTrackingNumber(String courierParcelTrackingNumber) {
 		this.courierParcelTrackingNumber = courierParcelTrackingNumber;
-	}
-
-	public String getDAddressLine1() {
-		return this.DAddressLine1;
-	}
-
-	public void setDAddressLine1(String DAddressLine1) {
-		this.DAddressLine1 = DAddressLine1;
-	}
-
-	public String getDAddressLine2() {
-		return this.DAddressLine2;
-	}
-
-	public void setDAddressLine2(String DAddressLine2) {
-		this.DAddressLine2 = DAddressLine2;
-	}
-
-	public String getDArea() {
-		return this.DArea;
-	}
-
-	public void setDArea(String DArea) {
-		this.DArea = DArea;
-	}
-
-	public String getDCompany() {
-		return this.DCompany;
-	}
-
-	public void setDCompany(String DCompany) {
-		this.DCompany = DCompany;
-	}
-
-	public String getDCountry() {
-		return this.DCountry;
-	}
-
-	public void setDCountry(String DCountry) {
-		this.DCountry = DCountry;
-	}
-
-	public String getDCountryCode() {
-		return this.DCountryCode;
-	}
-
-	public void setDCountryCode(String DCountryCode) {
-		this.DCountryCode = DCountryCode;
-	}
-
-	public String getDeleted() {
-		return this.deleted;
-	}
-
-	public void setDeleted(String deleted) {
-		this.deleted = deleted;
-	}
-
-	public String getDEmail() {
-		return this.DEmail;
-	}
-
-	public void setDEmail(String DEmail) {
-		this.DEmail = DEmail;
-	}
-
-	public String getDPostCode() {
-		return this.DPostCode;
-	}
-
-	public void setDPostCode(String DPostCode) {
-		this.DPostCode = DPostCode;
-	}
-
-	public String getDTown() {
-		return this.DTown;
-	}
-
-	public void setDTown(String DTown) {
-		this.DTown = DTown;
 	}
 
 	public String getEnhancement() {
@@ -658,5 +587,15 @@ public class Item implements Serializable {
 	public void setInvoice(Invoice invoice) {
 		this.invoice = invoice;
 	}
+
+	public String getDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(String deleted) {
+		this.deleted = deleted;
+	}
+
+
 
 }
